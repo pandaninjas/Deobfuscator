@@ -17,7 +17,7 @@
         <asm.version>9.3</asm.version>
         <log4j.version>2.17.2</log4j.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <kafedjud.version>1.10.1</kafedjud.version>
+        <kafedjud.version>1.10.2</kafedjud.version>
     </properties>
 
     <repositories>
