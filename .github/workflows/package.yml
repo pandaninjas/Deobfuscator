@@ -15,6 +15,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Publish package
-        run: mvn package && mvn --batch-mode deploy
+        run: mvn package && mvn deploy-file -Dfile=./target/Deobfuscator-2.0-SNAPSHOT.jar -DpomFile=./pom.xml -DrepositoryId=github -Durl=https://maven.pkg.github.com/pandaninjas/Deobfuscator
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
