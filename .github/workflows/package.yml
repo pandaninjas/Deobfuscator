@@ -17,4 +17,4 @@ jobs:
       - name: Add token to maven settings
         run: echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>"
       - name: Publish package
-        run: mvn package && mvn deploy:deploy-file -Dfile=./target/Deobfuscator-2.0-SNAPSHOT.jar -DpomFile=./pom.xml -DrepositoryId=github -Durl=https://maven.pkg.github.com/pandaninjas/Deobfuscator
+        run: mvn package && cd deobfuscator-api && mvn deploy
