@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>Diobfuscator</artifactId>
+        <groupId>uwu.narumi</groupId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>deobfuscator-api</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <asm.version>9.8</asm.version>
+
+        <log4j.version>2.23.1</log4j.version>
+        <slf4j.version>2.0.13</slf4j.version>
+        <cafedude.version>2.2.0</cafedude.version>
+        <ssvm.version>ca3c3ab713</ssvm.version>
+        <jlinker.version>205d8eaa1f</jlinker.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.xxDark</groupId>
+            <artifactId>jlinker</artifactId>
+            <version>${jlinker.version}</version>
+        </dependency>
+
+        <!-- Fork of SSVM -->
+        <dependency>
+            <groupId>com.github.EpicPlayerA10.SSVM</groupId>
+            <artifactId>mirrors</artifactId>
+            <version>${ssvm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.EpicPlayerA10.SSVM</groupId>
+            <artifactId>ssvm-core</artifactId>
+            <version>${ssvm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.EpicPlayerA10.SSVM</groupId>
+            <artifactId>ssvm-invoke</artifactId>
+            <version>${ssvm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.EpicPlayerA10.SSVM</groupId>
+            <artifactId>ssvm-io</artifactId>
+            <version>${ssvm.version}</version>
+        </dependency>
+
+        <!-- ASM -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-util</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <!-- SLF4J Bridge -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.Col-E</groupId>
+            <artifactId>CAFED00D</artifactId>
+            <version>${cafedude.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

@@ -1,0 +1,555 @@
+package io.github.repooper.packetevents;
+
+import io.github.repooper.packetevents.bstats.Metrics;
+import io.github.repooper.packetevents.bstats.Metrics.SimplePie;
+import io.github.repooper.packetevents.event.impl.PostPlayerInjectEvent;
+import io.github.repooper.packetevents.event.manager.EventManager;
+import io.github.repooper.packetevents.event.manager.PEEventManager;
+import io.github.repooper.packetevents.exceptions.PacketEventsLoadFailureException;
+import io.github.repooper.packetevents.injector.GlobalChannelInjector;
+import io.github.repooper.packetevents.packettype.PacketType;
+import io.github.repooper.packetevents.packettype.PacketTypeClasses;
+import io.github.repooper.packetevents.packetwrappers.WrappedPacket;
+import io.github.repooper.packetevents.packetwrappers.play.out.entityequipment.WrappedPacketOutEntityEquipment.EquipmentSlot;
+import io.github.repooper.packetevents.processor.BukkitEventProcessorInternal;
+import io.github.repooper.packetevents.processor.PacketProcessorInternal;
+import io.github.repooper.packetevents.settings.PacketEventsSettings;
+import io.github.repooper.packetevents.updatechecker.UpdateChecker;
+import io.github.repooper.packetevents.updatechecker.UpdateChecker.UpdateCheckerStatus;
+import io.github.repooper.packetevents.utils.entityfinder.EntityFinderUtils;
+import io.github.repooper.packetevents.utils.guava.GuavaUtils;
+import io.github.repooper.packetevents.utils.netty.bytebuf.ByteBufUtil;
+import io.github.repooper.packetevents.utils.netty.bytebuf.ByteBufUtil_7;
+import io.github.repooper.packetevents.utils.netty.bytebuf.ByteBufUtil_8;
+import io.github.repooper.packetevents.utils.nms.NMSUtils;
+import io.github.repooper.packetevents.utils.player.PlayerUtils;
+import io.github.repooper.packetevents.utils.server.ServerUtils;
+import io.github.repooper.packetevents.utils.server.ServerVersion;
+import io.github.repooper.packetevents.utils.version.PEVersion;
+import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
+import me.frep.vulcan.spigot.check.AbstractCheck;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.ServicesManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public final class PacketEvents implements Listener, EventManager {
+    private static PacketEvents instance;
+    private static Plugin plugin;
+    private final PEVersion version;
+    private final EventManager eventManager;
+    private final PlayerUtils playerUtils;
+    private final ServerUtils serverUtils;
+    private final PacketProcessorInternal packetProcessorInternal;
+    private final BukkitEventProcessorInternal bukkitEventProcessorInternal;
+    private final GlobalChannelInjector injector;
+    private final AtomicBoolean injectorReady;
+    private String handlerName;
+    private PacketEventsSettings settings;
+    private ByteBufUtil byteBufUtil;
+    private UpdateChecker updateChecker;
+    private volatile boolean loading;
+    private volatile boolean loaded;
+    private boolean initialized;
+    private boolean initializing;
+    private boolean terminating;
+    private boolean lateBind;
+    private static int Vulcan_k;
+
+    public PacketEvents() {
+        int var10000 = Vulcan_Q();
+        super();
+        int var3 = var10000;
+        this.version = new PEVersion(new int[]{1, 8, 4});
+        this.eventManager = new PEEventManager();
+        this.playerUtils = new PlayerUtils();
+        this.serverUtils = new ServerUtils();
+        this.packetProcessorInternal = new PacketProcessorInternal();
+        this.bukkitEventProcessorInternal = new BukkitEventProcessorInternal();
+        this.injector = new GlobalChannelInjector();
+        this.injectorReady = new AtomicBoolean();
+        this.settings = new PacketEventsSettings();
+        this.lateBind = false;
+        if (var3 == 0) {
+            AbstractCheck.Vulcan_t(!AbstractCheck.Vulcan_a());
+        }
+    }
+
+    public static PacketEvents Vulcan_o(Plugin var0) {
+        int var3 = Vulcan_a();
+        boolean var10000 = Bukkit.isPrimaryThread();
+        if (var3 == 0) {
+            if (!var10000) {
+                PacketEvents var5 = instance;
+                if (var3 == 0) {
+                    if (instance == null) {
+                        plugin = var0;
+                        instance = new PacketEvents();
+                    }
+
+                    var5 = instance;
+                }
+
+                return var5;
+            }
+
+            ServicesManager var4 = Bukkit.getServicesManager();
+            if (var3 != 0) {
+                return instance = (PacketEvents)var4.load(PacketEvents.class);
+            }
+
+            var10000 = var4.isProvidedFor(PacketEvents.class);
+        }
+
+        if (!var10000) {
+            instance = new PacketEvents();
+            Bukkit.getServicesManager().register(PacketEvents.class, instance, var0, ServicePriority.Normal);
+            plugin = var0;
+            return instance;
+        } else {
+            return instance = (PacketEvents)Bukkit.getServicesManager().load(PacketEvents.class);
+        }
+    }
+
+    public static PacketEvents Vulcan_V() {
+        return instance;
+    }
+
+    @Deprecated
+    public static PacketEvents Vulcan_a() {
+        return instance;
+    }
+
+    public void Vulcan_g() {
+        long var3;
+        long var5;
+        long var7;
+        long var9;
+        long var11;
+        long var13;
+        long var15;
+        int var17;
+        PacketEvents var24;
+        label89: {
+            var3 = 100924278520616L;
+            var5 = 26099128416120L;
+            var7 = 127830791373044L;
+            var9 = 13544093978976L;
+            var11 = 77232768417097L;
+            var13 = 73696640073211L;
+            var15 = 50836346346180L;
+            var17 = Vulcan_Q();
+            boolean var10000 = this.loaded;
+            if (var17 != 0) {
+                if (this.loaded) {
+                    return;
+                }
+
+                var24 = this;
+                if (var17 == 0) {
+                    break label89;
+                }
+
+                var10000 = this.loading;
+            }
+
+            if (var10000) {
+                return;
+            }
+
+            var24 = this;
+        }
+
+        var24.loading = true;
+        ServerVersion var18 = ServerVersion.Vulcan__();
+        WrappedPacket.version = var18;
+        NMSUtils.version = var18;
+        EntityFinderUtils.version = var18;
+        this.handlerName = "pe-" + plugin.getName();
+
+        try {
+            label72: {
+                NMSUtils.Vulcan_S(new Object[]{var15});
+                PacketTypeClasses.Vulcan_Y(new Object[]{var13});
+                PacketType.Vulcan_R(new Object[]{var7});
+                EntityFinderUtils.Vulcan_k(new Object[]{var9});
+                this.Vulcan_l().entityCache = GuavaUtils.Vulcan_C(new Object[]{var3});
+                if (var17 != 0) {
+                    if (var18.Vulcan_P(ServerVersion.v_1_9)) {
+                        EquipmentSlot[] var19 = EquipmentSlot.values();
+                        int var20 = var19.length;
+                        int var21 = 0;
+
+                        while (var21 < var20) {
+                            EquipmentSlot var22 = var19[var21];
+                            var22.id = (byte)var22.ordinal();
+                            var21++;
+                            if (var17 == 0) {
+                                break label72;
+                            }
+
+                            if (var17 == 0) {
+                                break;
+                            }
+                        }
+
+                        if (var17 != 0) {
+                            break label72;
+                        }
+                    }
+
+                    EquipmentSlot.MAINHAND.id = 0;
+                    EquipmentSlot.OFFHAND.id = -1;
+                    EquipmentSlot.BOOTS.id = 1;
+                    EquipmentSlot.LEGGINGS.id = 2;
+                    EquipmentSlot.CHESTPLATE.id = 3;
+                }
+
+                EquipmentSlot.HELMET.id = 4;
+            }
+        } catch (Exception var23) {
+            this.loading = false;
+            throw new PacketEventsLoadFailureException(var23);
+        }
+
+        this.byteBufUtil = (ByteBufUtil)(NMSUtils.legacyNettyImportMode ? new ByteBufUtil_7() : new ByteBufUtil_8());
+        this.updateChecker = new UpdateChecker();
+        var24 = this;
+        if (var17 != 0) {
+            if (!this.injectorReady.get()) {
+                this.injector.Vulcan_b(new Object[]{var5});
+                boolean var10001 = this.injector.Vulcan_K(new Object[]{var11});
+                if (var17 != 0) {
+                    var10001 = !var10001;
+                }
+
+                this.lateBind = var10001;
+                var24 = this;
+                if (var17 != 0) {
+                    if (!this.lateBind) {
+                        this.injector.Vulcan_B();
+                    }
+
+                    var24 = this;
+                }
+
+                var24.injectorReady.set(true);
+            }
+
+            this.loaded = true;
+            var24 = this;
+        }
+
+        var24.loading = false;
+    }
+
+    @Deprecated
+    public void Vulcan_x() {
+        new Thread(this::Vulcan_g).start();
+    }
+
+    @Deprecated
+    public void Vulcan_l(ExecutorService var1) {
+        var1.execute(this::Vulcan_g);
+    }
+
+    public void Vulcan_y(PacketEventsSettings var1) {
+        this.settings = var1;
+    }
+
+    public void Vulcan_a() {
+        this.Vulcan_o(this.Vulcan_N());
+    }
+
+    // $VF: Irreducible bytecode was duplicated to produce valid code
+    public void Vulcan_o(PacketEventsSettings var1) {
+        int var10000 = Vulcan_Q();
+        this.Vulcan_g();
+        int var4 = var10000;
+        boolean var7 = this.initialized;
+        if (var4 != 0) {
+            if (this.initialized) {
+                return;
+            }
+
+            var7 = this.initializing;
+        }
+
+        if (var4 != 0) {
+            if (var7) {
+                return;
+            }
+
+            this.initializing = true;
+            this.settings = var1;
+            this.settings.Vulcan_T(new Object[0]);
+            var7 = this.settings.Vulcan_j(new Object[0]);
+        }
+
+        if (var4 != 0) {
+            if (var7) {
+                this.Vulcan_H();
+            }
+
+            var7 = this.settings.Vulcan_o(new Object[0]);
+        }
+
+        label47: {
+            if (var4 != 0) {
+                if (var7) {
+                    Metrics var5 = new Metrics((JavaPlugin)this.Vulcan_a(), 11327);
+                    var5.addCustomChart(new SimplePie("packetevents_version", () -> this.Vulcan_x().toString()));
+                }
+            } else if (var7) {
+                break label47;
+            }
+
+            while (!this.injectorReady.get()) {
+            }
+        }
+
+        label38: {
+            Runnable var6;
+            label37: {
+                var6 = () -> {
+                    long var3 = 119084676127620L;
+                    long var5x = 123797029215992L;
+                    Bukkit.getPluginManager().registerEvents(this.bukkitEventProcessorInternal, plugin);
+                    int var10000x = Vulcan_a();
+                    Iterator var8 = Bukkit.getOnlinePlayers().iterator();
+                    int var7x = var10000x;
+
+                    while (var8.hasNext()) {
+                        Player var9 = (Player)var8.next();
+
+                        try {
+                            this.injector.Vulcan_D(new Object[]{var5x, var9});
+                            this.Vulcan_N().Vulcan_X(new Object[]{var3, new PostPlayerInjectEvent(var9, false)});
+                        } catch (Exception var10) {
+                            var9.kickPlayer("Failed to inject... Please rejoin!");
+                        }
+
+                        if (var7x != 0) {
+                            break;
+                        }
+                    }
+                };
+                if (var4 != 0) {
+                    if (!this.lateBind) {
+                        break label37;
+                    }
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this.injector::Vulcan_B);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, var6);
+                }
+
+                if (var4 != 0) {
+                    break label38;
+                }
+            }
+
+            var6.run();
+        }
+
+        this.initialized = true;
+        this.initializing = false;
+    }
+
+    @Deprecated
+    public void Vulcan_T(Plugin var1) {
+        this.Vulcan_y(var1, this.settings);
+    }
+
+    @Deprecated
+    public void Vulcan_y(Plugin var1, PacketEventsSettings var2) {
+        this.Vulcan_o(var2);
+    }
+
+    public void Vulcan_o() {
+        long var3 = 94080624911225L;
+        long var5 = 53297714112873L;
+        int var7 = Vulcan_Q();
+        boolean var10000 = this.initialized;
+        if (var7 != 0) {
+            if (!this.initialized) {
+                return;
+            }
+
+            var10000 = this.terminating;
+        }
+
+        if (!var10000) {
+            label24: {
+                for (Player var9 : Bukkit.getOnlinePlayers()) {
+                    this.injector.Vulcan_Q(new Object[]{var5, var9});
+                    if (var7 == 0) {
+                        break label24;
+                    }
+
+                    if (var7 == 0) {
+                        break;
+                    }
+                }
+
+                this.injector.Vulcan_d(new Object[]{var3});
+                this.Vulcan_N().Vulcan_h(new Object[0]);
+                this.initialized = false;
+            }
+
+            this.terminating = false;
+        }
+    }
+
+    @Deprecated
+    public void Vulcan_A() {
+        this.Vulcan_o();
+    }
+
+    public boolean Vulcan_r() {
+        return this.loading;
+    }
+
+    public boolean Vulcan_B() {
+        return this.loaded;
+    }
+
+    public boolean Vulcan_s() {
+        return this.terminating;
+    }
+
+    @Deprecated
+    public boolean Vulcan_w() {
+        return this.Vulcan_s();
+    }
+
+    public boolean Vulcan_X() {
+        return this.initializing;
+    }
+
+    public boolean Vulcan_E() {
+        return this.initialized;
+    }
+
+    public Plugin Vulcan_a() {
+        return plugin;
+    }
+
+    public GlobalChannelInjector Vulcan_G() {
+        return this.injector;
+    }
+
+    public PacketProcessorInternal Vulcan_R() {
+        return this.packetProcessorInternal;
+    }
+
+    public String Vulcan_p() {
+        return this.handlerName;
+    }
+
+    public PacketEventsSettings Vulcan_N() {
+        return this.settings;
+    }
+
+    public PEVersion Vulcan_x() {
+        return this.version;
+    }
+
+    public EventManager Vulcan_N() {
+        return this.eventManager;
+    }
+
+    public PlayerUtils Vulcan_O() {
+        return this.playerUtils;
+    }
+
+    public ServerUtils Vulcan_l() {
+        return this.serverUtils;
+    }
+
+    public ByteBufUtil Vulcan_m() {
+        return this.byteBufUtil;
+    }
+
+    public UpdateChecker Vulcan_b() {
+        return this.updateChecker;
+    }
+
+    private void Vulcan_H() {
+        label13: {
+            int var3 = Vulcan_Q();
+            PacketEvents var10000 = this;
+            if (var3 != 0) {
+                if (this.updateChecker != null) {
+                    break label13;
+                }
+
+                var10000 = this;
+            }
+
+            var10000.updateChecker = new UpdateChecker();
+        }
+
+        Thread var4 = new Thread(() -> {
+            long var3x = 71820540609001L;
+            int var10000x = Vulcan_a();
+            this.Vulcan_a().getLogger().info("[packetevents] Checking for an update, please wait...");
+            int var5 = var10000x;
+            UpdateCheckerStatus var6 = this.updateChecker.Vulcan_M(new Object[]{var3x});
+            int var7 = 5;
+            byte var8 = 5;
+            int var9 = 0;
+
+            while (var9 < var8 && (var6 == UpdateCheckerStatus.FAILED || var5 != 0)) {
+                this.Vulcan_a().getLogger().severe("[packetevents] Checking for an update again in " + var7 + " seconds...");
+
+                try {
+                    Thread.sleep((long)var7 * 1000L);
+                } catch (InterruptedException var11) {
+                    var11.printStackTrace();
+                }
+
+                var7 *= 2;
+                var6 = this.updateChecker.Vulcan_M(new Object[]{var3x});
+                if (var5 == 0) {
+                    if (var9 == 4) {
+                        this.Vulcan_a().getLogger().severe("[packetevents] PacketEvents failed to check for an update. No longer retrying.");
+                        if (var5 == 0) {
+                            break;
+                        }
+                    }
+
+                    var9++;
+                }
+
+                if (var5 != 0) {
+                    break;
+                }
+            }
+        }, "packetevents-update-check-thread");
+        var4.start();
+    }
+
+    public static void Vulcan_x(int var0) {
+        Vulcan_k = var0;
+    }
+
+    public static int Vulcan_a() {
+        return Vulcan_k;
+    }
+
+    public static int Vulcan_Q() {
+        int var0 = Vulcan_a();
+        return var0 == 0 ? 76 : 0;
+    }
+
+    static {
+        if (Vulcan_Q() == 0) {
+            Vulcan_x(49);
+        }
+    }
+}

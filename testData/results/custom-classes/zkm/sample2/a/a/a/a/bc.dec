@@ -1,0 +1,24 @@
+package a.a.a.a;
+
+public final class bc extends ba<Integer> {
+    private static final long serialVersionUID = 1L;
+
+    public static bc a(int var0, long var1, int var3) {
+        var1 = 90497055901648L ^ var1;
+        long var5 = var1 ^ 32932499080870L;
+        return b(new Object[]{var0, var5, var3});
+    }
+
+    public static bc b(Integer var0, long var1, Integer var3) {
+        var1 = 90497055901648L ^ var1;
+        int var5 = (int)((var1 ^ 61248110729654L) >>> 56);
+        long var6 = (var1 ^ 61248110729654L) << 8 >>> 8;
+        return new bc((byte)var5, var0, var3, var6);
+    }
+
+    private bc(byte var1, Integer var2, Integer var3, long var4) {
+        long var6 = ((long)var1 << 56 | var4 << 8 >>> 8) ^ 90497055901648L;
+        long var8 = var6 ^ 83241345321299L;
+        super(var8, var2, var3, null);
+    }
+}
