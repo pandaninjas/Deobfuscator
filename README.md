@@ -1,65 +1,45 @@
-<p align="center">
-     <a href="https://discord.gg/tRU27KtPAZ"><img src="https://discordapp.com/api/guilds/900083350314811432/widget.png?style=banner2"/></a>
-</p>
+# Diobfuscator
+A deobfuscator for java
 
----
+> If you are looking for v1 version of Diobfuscator, you can find it [here](https://github.com/narumii/Deobfuscator/tree/v1)
 
-### How to use
-- Learn **FUCKING JAVA**
-- Gain some knowledge of obfuscation/bytecode/re *(Optional)*
+## ✅ How to run deobfuscator
+If you want to use this deobfuscator, you need to start it from your IDE manually.
 
-This deobfuscator does not provide any **gui** or **configuration file** because it's meant to run through an **IDE**.\
-To configure deobfuscator for your preferences you need to edit **Loader** class.
+### Prerequisites
+**Important:** You need TWO different Java installations:
+- **[Java 17](https://adoptium.net/temurin/releases/?version=17)** - Required for the project to compile and run
+- **[Java 8](https://adoptium.net/temurin/releases/?version=8)** - Required for the sandbox (SSVM) to work properly
 
-- https://github.com/narumii/Deobfuscator#transformers
+### Instructions
+1. Clone this repository and open it in IntelliJ
+2. Make sure that you have selected [Java 17](https://adoptium.net/temurin/releases/?version=17) in `Project Structure` -> `SDK`
+3. Install [Java 8](https://adoptium.net/temurin/releases/?version=8) if you don't have it already
+4. Place your obfuscated jar inside the root project directory. For example in `work/obf-test.jar`
+5. Navigate to class [`Bootstrap.java`](./deobfuscator-impl/src/test/java/Bootstrap.java)
+6. In this class edit the deobfuscator configuration
+    - `inputJar` - Your obfuscated jar file that you placed in step 4
+    - `transformers` - Pick transformers that you want to run. You can find them in [`deobfuscator-transformers`](./deobfuscator-transformers/src/main/java/uwu/narumi/deobfuscator/core/other) module.
+7. Run this class manually from your IDE. You can use our pre-configured IntelliJ task named `Bootstrap`.
 
----
+![tak](./assets/run-deobfuscator.gif)
 
-### Supported Obfuscators
+## 🔧 Contributing
+Contributions are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for a project introduction and some basics about java bytecode.
 
-- [superblaubeere27 / JObf / sb27](https://github.com/superblaubeere27/obfuscator)
-- [Paramorphism 2.1.2_9](https://paramorphism.dev/)
-- [Caesium](https://github.com/sim0n/Caesium)
-- [Monsey](https://github.com/Hippo/Mosey)
-- [**Skid** qProtect (Not Latest)](https://mdma.dev/)
-- [Scuti](https://github.com/netindev/scuti)
-- [CheatBreaker](https://github.com/CheatBreaker/Obf)
-- [Bozar](https://github.com/vimasig/Bozar)
-- **RakSzild**: Some stupid polish obfuscator used in HackShield
-- **HP888**: Some stupid polish obfuscator v2 used in EyfenCord/SafeMC
+## ❓ FAQ
 
-### Partially Supported Obfuscators
-- [Binsecure 0.4/Latest](https://binclub.dev/purchasing/)
-- [(Skid)q~~Protect~~](https://mdma.dev/)
-- [Radon](https://github.com/ItzSomebody/radon)
-- [Branchlock](https://branchlock.net/)
-- [Skidfuscator](https://github.com/terminalsin/skidfuscator-java-obfuscator)
-- Colonial
-- Sentinel
+**Q: Sandbox doesn't work / "rt.jar is required for sandbox to run" error**
 
-### In Future Supported Obfuscators (maybe)
-- [(In the works) qProtect 1.9.6] (https://mdma.dev/)
+A: The sandbox requires rt.jar from **[Java 8](https://adoptium.net/temurin/releases/?version=8)** installation. The deobfuscator will try to auto-detect it, but if it fails:
+- Make sure you have [Java 8](https://adoptium.net/temurin/releases/?version=8) installed
+- You can manually set it via system property: `-DrtJarPath="path/to/rt.jar"`
+- Or specify it in your Bootstrap configuration: `.rtJarPath(Path.of("path/to/rt.jar"))`
+- Common rt.jar locations (may vary based on installation):
+  - Oracle JDK 8: `C:/Program Files/Java/jdk1.8.0_202/jre/lib/rt.jar`
+  - Eclipse Adoptium JDK 8: `C:/Program Files/Eclipse Adoptium/jdk-8.0.462.8-hotspot/jre/lib/rt.jar`
 
----
+## Links
 
-### Transformers
-> If you know nothing bout deobfuscation use **precomposed** ones\
-> Most of transformers are done without frames so they might not work sometimes
-- [Precomposed transformers for some obfuscators](https://github.com/narumii/Deobfuscator/tree/master/src/main/java/uwu/narumi/deobfuscator/transformer/composed)
-- [All available transformers](https://github.com/narumii/Deobfuscator/tree/master/src/main/java/uwu/narumi/deobfuscator/transformer/impl)
+<a href="https://discord.gg/tRU27KtPAZ"><img src="https://discordapp.com/api/guilds/900083350314811432/widget.png?style=banner2"/></a>
 
----
-
-### SandBox doesn't work
-
-> Just add `-noverify` to jvm arguments if still doesn't work then open issue
-
-![](https://i.imgur.com/PBCQ6iO.png)
-
----
-
-> Deobfuscator only makes code readable for humans (don't expect the decompiled jar to run) also if some decompilators can't decompile class try another and if no one works just create issue that includes: `[sample jar with obfuscation, deobfuscator transformers, deobfuscator log file]` and optional obfuscator name.
-
----
-
-> Built on: [Java 11 (Adoptium)](https://adoptium.net/temurin/releases/?version=11)
