@@ -6,7 +6,7 @@
 
   <groupId>uwu.narumi</groupId>
   <artifactId>Diobfuscator</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <version>2.0-SNAPSHOT</version>
 
   <modules>
