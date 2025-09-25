@@ -15,7 +15,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Publish package
-        run: mvn package && cd deobfuscator-api && mvn deploy
+        run: mvn package && cd deobfuscator-api && mvn deploy && cd ../deobfuscator-impl && mvn deploy && cd ../deobfuscator-transformers && mvn deploy && cd ../reverse-engineering && mvn deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
